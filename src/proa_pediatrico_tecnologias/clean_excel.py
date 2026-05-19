@@ -22,13 +22,34 @@ def _clean_sheet(worksheet) -> None:
 
 
 def clean_excel_file(input_path: str | Path, output_path: str | Path | None = None) -> Path:
+    """
+    Limpia un archivo `.xlsx` eliminando filas y columnas completamente vacías.
+
+    Args:
+        input_path: Ruta al archivo de entrada.
+        output_path: Ruta de salida opcional. Si no se indica, se crea
+            `<nombre>_cleaned.xlsx` en la misma carpeta del archivo de entrada.
+
+    Returns:
+        Ruta del archivo limpio generado.
+
+    Raises:
+        ValueError: Si el archivo no tiene extensión `.xlsx`.
+        FileNotFoundError: Si el archivo de entrada no existe.
+        RuntimeError: Si no se puede leer el archivo Excel.
+    """
     source = Path(input_path)
     if source.suffix.lower() != ".xlsx":
         raise ValueError("Solo se soportan archivos .xlsx")
+    if not source.exists():
+        raise FileNotFoundError(f"No se encontró el archivo: {source}")
 
     destination = Path(output_path) if output_path else source.with_name(f"{source.stem}_cleaned.xlsx")
 
-    workbook = load_workbook(source)
+    try:
+        workbook = load_workbook(source)
+    except Exception as exc:
+        raise RuntimeError(f"No se pudo leer el archivo Excel: {source}") from exc
     for sheet in workbook.worksheets:
         _clean_sheet(sheet)
     workbook.save(destination)

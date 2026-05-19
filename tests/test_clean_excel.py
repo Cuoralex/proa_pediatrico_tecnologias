@@ -39,6 +39,8 @@ class CleanExcelFileTests(unittest.TestCase):
     def test_rejects_non_xlsx_input(self):
         with self.assertRaises(ValueError):
             clean_excel_file("archivo.csv")
+        with self.assertRaises(ValueError):
+            clean_excel_file(Path("archivo.csv"))
 
 
 if __name__ == "__main__":
