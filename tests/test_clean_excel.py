@@ -27,6 +27,8 @@ class CleanExcelFileTests(unittest.TestCase):
             wb.save(input_file)
 
             output_file = clean_excel_file(input_file)
+            self.assertTrue(output_file.exists())
+            self.assertEqual(output_file.name, "entrada_cleaned.xlsx")
 
             cleaned_wb = load_workbook(output_file)
             cleaned_ws = cleaned_wb.active
