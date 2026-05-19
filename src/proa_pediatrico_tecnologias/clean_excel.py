@@ -24,8 +24,10 @@ def _clean_sheet(worksheet) -> None:
         current_max_row = worksheet.max_row
         if current_max_row < 1:
             break
-        column_cells = [worksheet.cell(row=row_idx, column=col_idx) for row_idx in range(1, current_max_row + 1)]
-        if all(_is_empty_value(cell.value) for cell in column_cells):
+        if all(
+            _is_empty_value(worksheet.cell(row=row_idx, column=col_idx).value)
+            for row_idx in range(1, current_max_row + 1)
+        ):
             worksheet.delete_cols(col_idx)
 
 
