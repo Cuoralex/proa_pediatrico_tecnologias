@@ -55,6 +55,8 @@ def clean_excel_file(input_path: str | Path, output_path: str | Path | None = No
         raise FileNotFoundError(f"No se encontró el archivo: {source}")
 
     destination = Path(output_path) if output_path else source.with_name(f"{source.stem}_cleaned.xlsx")
+    if destination.resolve() == source.resolve():
+        raise ValueError("El archivo de salida debe ser diferente al archivo de entrada")
 
     try:
         workbook = load_workbook(source)
@@ -62,7 +64,10 @@ def clean_excel_file(input_path: str | Path, output_path: str | Path | None = No
         raise RuntimeError(f"No se pudo leer el archivo Excel: {source}") from exc
     for sheet in workbook.worksheets:
         _clean_sheet(sheet)
-    workbook.save(destination)
+    try:
+        workbook.save(destination)
+    except OSError as exc:
+        raise RuntimeError(f"No se pudo guardar el archivo Excel limpio: {destination}") from exc
 
     return destination
 

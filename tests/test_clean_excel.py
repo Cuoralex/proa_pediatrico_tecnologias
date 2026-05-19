@@ -52,8 +52,18 @@ class CleanExcelFileTests(unittest.TestCase):
         with TemporaryDirectory() as tmp_dir:
             invalid_xlsx = Path(tmp_dir) / "invalido.xlsx"
             invalid_xlsx.write_text("no es un archivo xlsx válido", encoding="utf-8")
-            with self.assertRaises(RuntimeError):
+            with self.assertRaisesRegex(RuntimeError, "No se pudo leer el archivo Excel"):
                 clean_excel_file(invalid_xlsx)
+
+    def test_rejects_same_input_and_output_path(self):
+        with TemporaryDirectory() as tmp_dir:
+            input_file = Path(tmp_dir) / "entrada.xlsx"
+            wb = Workbook()
+            wb.active["A1"] = "dato"
+            wb.save(input_file)
+
+            with self.assertRaises(ValueError):
+                clean_excel_file(input_file, input_file)
 
 
 if __name__ == "__main__":
