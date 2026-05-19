@@ -44,6 +44,17 @@ class CleanExcelFileTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             clean_excel_file(Path("archivo.csv"))
 
+    def test_raises_file_not_found_for_missing_file(self):
+        with self.assertRaises(FileNotFoundError):
+            clean_excel_file(Path("no-existe.xlsx"))
+
+    def test_raises_runtime_error_for_invalid_xlsx_content(self):
+        with TemporaryDirectory() as tmp_dir:
+            invalid_xlsx = Path(tmp_dir) / "invalido.xlsx"
+            invalid_xlsx.write_text("no es un archivo xlsx válido", encoding="utf-8")
+            with self.assertRaises(RuntimeError):
+                clean_excel_file(invalid_xlsx)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -17,9 +17,14 @@ def _clean_sheet(worksheet) -> None:
         if all(_is_empty_value(cell.value) for cell in worksheet[row_idx]):
             worksheet.delete_rows(row_idx)
 
-    max_row = worksheet.max_row
+    if worksheet.max_row < 1 or worksheet.max_column < 1:
+        return
+
     for col_idx in range(worksheet.max_column, 0, -1):
-        column_cells = [worksheet.cell(row=row_idx, column=col_idx) for row_idx in range(1, max_row + 1)]
+        current_max_row = worksheet.max_row
+        if current_max_row < 1:
+            break
+        column_cells = [worksheet.cell(row=row_idx, column=col_idx) for row_idx in range(1, current_max_row + 1)]
         if all(_is_empty_value(cell.value) for cell in column_cells):
             worksheet.delete_cols(col_idx)
 
